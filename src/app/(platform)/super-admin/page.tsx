@@ -1,0 +1,3 @@
+import { redirect, notFound } from 'next/navigation';
+import { createClient, isConfigured } from '@/lib/supabase/server';
+export default async function Platform() { if(!isConfigured()) notFound(); const db=await createClient(); const {data:{user}}=await db.auth.getUser(); if(!user) redirect('/login'); const {data}=await db.from('platform_admins').select('user_id').eq('user_id',user.id).single(); if(!data) notFound(); return <main className="p-10"><h1 className="text-2xl font-bold">CARDAPÊ · Administração da plataforma</h1><p className="mt-4">Acesso verificado. Ferramentas de administração serão entregues em uma próxima etapa.</p></main>; }
