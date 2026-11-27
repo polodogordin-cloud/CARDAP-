@@ -1,0 +1,4 @@
+-- No default credentials or production establishments.
+-- Create auth users through Supabase Auth (local dashboard), then a trusted
+-- transaction can insert establishments + owner memberships. This deliberately
+-- cannot be done from the anon/authenticated browser client.

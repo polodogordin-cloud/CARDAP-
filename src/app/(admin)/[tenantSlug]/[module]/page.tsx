@@ -1,0 +1,10 @@
+import { notFound } from 'next/navigation';
+import { navigation } from '@/lib/navigation';
+import { requireTenant } from '@/lib/tenant/context';
+import { can, roleLabels, roles } from '@/lib/auth/permissions';
+import { Card, Badge, PageHeading } from '@/components/ui';
+import { Blocks, LockKeyhole } from 'lucide-react';
+export default async function Module({ params }: { params: Promise<{tenantSlug:string;module:string}> }) {
+ const {tenantSlug,module} = await params; const item = navigation.find(n=>n.key===module); if(!item) notFound(); const tenant = await requireTenant(tenantSlug); if(!can(tenant.role,item.permission)) notFound();
+ return <><PageHeading eyebrow={`Estabelecimento / ${item.label}`} title={item.label} description="Um lugar para cada parte da sua operação. Uma única plataforma para conectar tudo."/><Card><Badge tone="orange">Próxima etapa</Badge><Blocks className="my-6 text-orange-500" size={36} strokeWidth={1.3}/><h2 className="text-xl font-semibold">A estrutura está preparada.</h2><p className="mt-3 max-w-xl text-sm leading-7 text-slate-500">Este módulo faz parte do núcleo do CARDAPÊ. As funcionalidades serão desenvolvidas por etapas, com validação de permissões e isolamento dos dados do estabelecimento.</p><p className="mt-6 flex items-center gap-2 text-xs text-slate-400"><LockKeyhole size={14}/> Contexto: {tenant.name} · {roleLabels[tenant.role]}</p></Card>{module==='equipe' && <Card className="mt-5"><h2 className="mb-5 font-semibold">Perfis definidos na fundação</h2><div className="flex flex-wrap gap-3">{roles.map(r=><Badge key={r}>{roleLabels[r]}</Badge>)}</div><p className="mt-5 text-xs text-slate-500">Super Admin pertence à plataforma. Clientes acessam a experiência pública, sem privilégios administrativos.</p></Card>}{module==='configuracoes' && <Card className="mt-5"><h2 className="font-semibold">Um núcleo, diferentes formatos</h2><p className="mt-3 text-sm leading-7 text-slate-500">Tipo de estabelecimento, identidade visual, endereço, contatos, horários e canais de atendimento possuem um único modelo de configuração. A edição será implementada no onboarding.</p></Card>}</>;
+}
